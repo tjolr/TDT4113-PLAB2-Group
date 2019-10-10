@@ -30,16 +30,18 @@ class Keypad:
         for r_p in Keypad.rows:
             GPIO.output(r_p, GPIO.HIGH)
             for c_p in Keypad.cols:
-                for _ in range(20): # checks whether it's not just noise by checking 20 times
+                for _ in range(10): # checks whether it's not just noise by checking 20 times
                     if GPIO.input(c_p) == GPIO.HIGH:
                         pressed = True
-                        time.sleep(0.001) # waits 10 milliseconds and tries again
+                        time.sleep(0.01) # waits 10 milliseconds and tries again
                     else:
                         #if it's not high, we set pressed to false, and breaks out of the testloop
                         pressed = False
                         break
                 if pressed:
-                    return (Keypad.rows[r_p], Keypad.cols[c_p])
+                    while GPIO.input(c_p) == GPIO.HIGH: # Don't return before button is released
+                        time.sleep(0.001)
+                    return (r_p, c_p)
             GPIO.output(r_p, GPIO.LOW) # set the row to low before we move to the next
         return False
 
@@ -50,3 +52,19 @@ class Keypad:
         while not polled:
             polled = self.do_polling()
         return Keypad.key_mapping[polled]
+
+
+
+# FOR TESTING
+
+#def main():
+#    testpad = Keypad()
+#    testpad.setup()
+#    signal = 0
+#    while signal != "#":
+#        print(signal)
+#        signal = testpad.get_next_signal()
+#    print("FINISH")
+#
+#if __name__ == "__main__":
+#    main()
