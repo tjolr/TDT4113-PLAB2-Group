@@ -19,7 +19,6 @@ class FSM:
 
     def get_next_signal(self, debug=True):
         '''query the agent for next signal'''
-
         self.symbol = self.agent.get_next_signal()
 
         if debug:
