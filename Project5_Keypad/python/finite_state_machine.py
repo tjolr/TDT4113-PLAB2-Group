@@ -49,24 +49,47 @@ class FSM:
     def main(self):
         '''Main method'''
 
+        #Setting up the FSM with the correct rules
+        # Rules that are representing one arc each in the full FSM graph.
+        # Setting the rules in the order which makes specific-before-general
+
+        # From state s_init
+        R1 = Rule("s_init", "s_read", signal_accept_all, "reset_password_accumulator")
+
+        # From state s_read
+        R3 = Rule("s_read", "s_verify", "*", "verify_login")
+        R2 = Rule("s_read", "s_read", signal_is_digit, "append_next_password_digit")
+        R13 = Rule("s_read", "s_init", signal_accept_all, "reset_agent")
+
+        # From state s_verify
+        R5 = Rule("s_verify", "s_active", "Y", "fully_activate_agent")  # Not sure about agent action here
+        R4 = Rule("s_verify", "s_init", signal_accept_all, "reset_agent")
+
+        # From state s_active
+        R6 = Rule("s_active", "s_read_2", "*", "init_passcode_entry")
+
+        # From state s_read_2
+        R8 = Rule("s_read_2", "s_read_3", "*", "cache_1st_new_password")
+        R7 = Rule("s_read_2", "s_read_2", signal_is_digit, "get_next_signal")
+        R10 = Rule("s_read_2", "s_active", signal_accept_all, "fully_ activate_agent")  # Not sure about agent action
+
+        # From state s_read_3
+        R12 = Rule("s_read_3", "s_active", "*", "fully_ activate_agent")  # Not sure about agent action
+        R9 = Rule("s_read_3", "s_read_3", signal_is_digit, "get_next_signal")
+        R11 = Rule("s_read_3", "s_read_3", signal_accept_all, "fully_ activate_agent")  # Not sure about agent action
+
+
+        # Same order as the rules above
+        rule_order = [R1, R3, R2, R13, R5, R4, R6, R8, R7, R10, R12, R9, R11]
+        #Adding each rule to the FSM
+        for rule in rule_order:
+            self.add_rule(rule)
+
+
         #Query for next signal and run rules until the FSM enters its default final state
         while self.symbol != "#":
             self.get_next_signal()
             self.run_rules()
-
-class Agent:
-    '''Agent class just for testing'''
-    def __init__(self):
-        ''''''
-        self.signals = ["2", "8", "3", "6", "*", "Y", "*","5","1","7", "*", "5", "1", "7", "*"]
-
-    def get_next_signal(self):
-        if self.signals:
-            return self.signals.pop(0)
-        return "#"
-
-    def do_action(self, action, symbol):
-        pass
 
 
 class Rule:
@@ -91,65 +114,25 @@ def signal_is_digit(signal): return 48 <= ord(signal) <= 57
 
 def signal_accept_all(signal): return True
 
+class Agent:
+    '''Agent class just for testing'''
+    def __init__(self):
+        ''''''
+        self.signals = ["2", "8", "3", "6", "*", "Y", "*","5","1","7", "*", "5", "1", "7", "*"]
+
+    def get_next_signal(self):
+        if self.signals:
+            return self.signals.pop(0)
+        return "#"
+
+    def do_action(self, action, symbol):
+        pass
+
 def main():
     '''Main method for testing'''
     agent = Agent()
     fsm = FSM(agent)
 
-    #Rules that are representing one arc each in the full FSM graph.
-    #Setting the rules in the order which makes specific-before-general
-
-    #From state s_init
-    R1 = Rule("s_init", "s_read", signal_accept_all, "init_passcode_entry")
-
-    #From state s_read
-    R3 = Rule("s_read", "s_verify", "*", "verify_login")
-    R2 = Rule("s_read", "s_read", signal_is_digit, "get_next_signal")
-    R13 = Rule("s_read", "s_init", signal_accept_all, "init") #Not sure about agent action
-
-    #From state s_verify
-    R5 = Rule("s_verify", "s_active", "Y", "fully_activate_agent") #Not sure about agent action here
-    R4 = Rule("s_verify", "s_init", signal_accept_all, "init") #Not sure about agent action here
-
-    #From state s_active
-    R6 = Rule("s_active", "s_read_2", "*", "init_passcode_entry")
-
-    #From state s_read_2
-    R8 = Rule("s_read_2", "s_read_3", "*", "cache_1st_new_password")
-    R7 = Rule("s_read_2", "s_read_2", signal_is_digit, "get_next_signal")
-    R10 = Rule("s_read_2", "s_active", signal_accept_all, "fully_ activate_agent") #Not sure about agent action
-
-
-    #From state s_read_3
-    R12 = Rule("s_read_3", "s_active", "*", "fully_ activate_agent") #Not sure about agent action
-    R9 = Rule("s_read_3", "s_read_3", signal_is_digit, "get_next_signal")
-    R11 = Rule("s_read_3", "s_read_3", signal_accept_all, "fully_ activate_agent") #Not sure about agent action
-
-
-
-    #Same order as the rules above
-    fsm.add_rule(R1)
-
-    fsm.add_rule(R3)
-    fsm.add_rule(R2)
-    fsm.add_rule(R13)
-
-    fsm.add_rule(R5)
-    fsm.add_rule(R4)
-
-    fsm.add_rule(R6)
-
-    fsm.add_rule(R8)
-    fsm.add_rule(R7)
-    fsm.add_rule(R10)
-
-    fsm.add_rule(R12)
-    fsm.add_rule(R9)
-    fsm.add_rule(R11)
-
-
-
-    print(fsm.rule_list)
 
     fsm.main()
 
