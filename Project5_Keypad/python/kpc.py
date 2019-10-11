@@ -126,3 +126,9 @@ class KPC:
         Call the LED Board to initiate the ”power down” lighting sequence.
         """
         self.led_board.power_down()
+
+    def fully_activate_agent(self):
+        pass
+
+    def cache_1st_new_password(self):
+        pass
