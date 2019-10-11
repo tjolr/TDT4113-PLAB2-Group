@@ -1,3 +1,6 @@
+'''Module for implementing the led-interface. Using Charlieplexing.'''
+
+import time
 import RPi.GPIO as GPIO
 
 class Charlie:
@@ -28,20 +31,67 @@ class Charlie:
             elif mode == -1:
                 GPIO.setup(Charlie.pins[pin_index], GPIO.IN)
 
-    def turn_off_all(self):
+    def light_leds(self, led_ns, duration):
+        '''Turns on multiple LESs by using a loop.'''
+        start_t = time.time()
+        while time.time() - start_t < duration:
+            for led in led_ns:
+                self.light_led(led)
+
+    def all_off(self):
         '''Turns all the LEDs off, mainly for debugging maybe.'''
         for pin in Charlie.pins:
             GPIO.setup(pin, GPIO.OUT)
             GPIO.output(pin, GPIO.LOW)
 
+    def light_all(self, duration):
+        '''Turns on all LEDs for duration'''
+        self.light_leds(["A", "B", "C", "D", "E", "F"], duration)
+
+    def power_up(self):
+        '''Sequence of lights when powering on.'''
+        self.light_leds(["C", "D"], 0.25)
+        self.light_leds(["B", "C", "D", "E"], 0.25)
+        self.light_all(0.25)
+        self.all_off()
+        time.sleep(0.25)
+        self.light_all(0.25)
+        self.all_off()
+
+    def deny(self):
+        '''Blinking all LEDs when the password is wrong.'''
+        self.light_all(0.25)
+        self.all_off()
+        time.sleep(0.25)
+        self.light_all(0.25)
+        self.all_off()
+        time.sleep(0.25)
+        self.light_all(0.25)
+        self.all_off()
+        time.sleep(0.25)
+        self.light_all(0.25)
+        self.all_off()
+
+    def login(self):
+        '''Sequence of lights when successful login'''
+        self.light_leds(["A", "C", "D", "F"], 0.25)
+        self.light_leds(["B", "E"], 0.25)
+        self.light_leds(["A", "C", "D", "F"], 0.25)
+        self.light_leds(["B", "E"], 0.25)
+
+    def power_off(self):
+        '''Sequence of lights when logging out'''
+        self.light_all(0.5)
+        self.light_leds(["B", "C", "D", "E"], 0.25)
+        self.light_leds(["C", "D"], 0.25)
+        self.all_off()
+
 def main():
+    '''Main function'''
     testpad = Charlie()
     testpad.setup()
-    #testpad.light_led("A")
-    #testpad.light_led("B")
-    #testpad.light_led("C")
-    #testpad.light_led("D")
-    testpad.turn_off_all()
+    testpad.light_leds(["A", "B", "C"], 5)
+    testpad.all_off()
 
 
 if __name__ == "__main__":
