@@ -4,38 +4,35 @@ Created on Mon Oct  7 10:56:59 2019
 
 @author:
 """
-from RPi import GPIO
 from time import sleep, time
+from RPi import GPIO
 
 class LED_board:
     """docstring"""
 
-    '''
-     1 = HIGH
-     0 = LOW
-    -1 = INPUT/HIGH IMPEDANCE
-    '''
     pin_led_states = [
-            [1, 0, -1], # A
-            [1, -1, 0], # E til 2
-            [-1, 1, 0], # D til 3
-            [-1, 0, 1], # B til 4
-            [0, -1, 1], # F til 5
-            [0, 1, -1], # C til 6
-            [0, 0, 0],  # Turns off all leds. Can be easilly called using pin_led_states[-1]
-            ]
+        [1, 0, -1], # A
+        [1, -1, 0], # E til 2
+        [-1, 1, 0], # D til 3
+        [-1, 0, 1], # B til 4
+        [0, -1, 1], # F til 5
+        [0, 1, -1], # C til 6
+        [0, 0, 0],  # Turns off all leds. Can be easilly called using pin_led_states[-1]
+        ]
 
     def __init__(self, ledPins, doSetup=False):
+        '''Konstruktør til LED_Board'''
 
-        self.ledPins = ledPins 
+        self.ledPins = ledPins
         if doSetup:
             self.setup()
 
     def setup(self):
+        '''Setting the correct pinmode'''
         GPIO.setmode(GPIO.BCM)
-        
 
     def set_pin(self, pin_index, pin_state):
+        '''Setting the state of the pin'''
         pins = self.ledPins
         if pin_state == -1:
             GPIO.setup(pins[pin_index], GPIO.IN)
@@ -44,6 +41,7 @@ class LED_board:
             GPIO.output(pins[pin_index], pin_state)
     
     def light_led(self, led_number):
+        '''Lighting one LED'''
         for pin_index, pin_state in enumerate(LED_board.pin_led_states[led_number]):
             self.set_pin(pin_index, pin_state)
 
@@ -82,18 +80,21 @@ class LED_board:
 
 
     def power_up(self):
+        '''sequence of lights when powering up'''
         for led in range(3):
             self.light_led(led)
             sleep(0.25)
         self.light_led(-1)
 
     def power_down(self):
-        for led in range(5,2,-1):
+        '''sequence of lights when powering down'''
+        for led in range(5, 2, -1):
             self.light_led(led)
             sleep(0.25)
         self.light_led(-1)
 
     def deny(self):
+        '''flashing LEDs when wrong password'''
         for _ in range(3):
             onTimeStart = time()
             while time()-onTimeStart < 0.25:
@@ -104,6 +105,7 @@ class LED_board:
             sleep(0.25)
 
     def login(self):
+        '''sequence og lights when logging in'''
         for _ in range(2):
             onTimeStart = time()
             while time()-onTimeStart < 0.1:
@@ -114,8 +116,5 @@ class LED_board:
             sleep(0.1)
 
     def confirm_valid(self):
+        '''login sequence'''
         self.login()
-    
-    
-"""additional methods for lighting patterns associated with powering up (and
-down) the system."""

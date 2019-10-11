@@ -1,10 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Oct  7 10:56:45 2019
-
-@author:
-"""
-
+'''Finite State Machine nad Rule'''
 
 class Rule:
     """Rule implementation"""
@@ -100,10 +94,10 @@ class FSM:
         then repeatedly call get next signal and run rules
         until the FSM enters its default final state.
         """
-        while 1:
+        while True:
             # sig is in [*, #, Y, N, 0-9]
             sig = self.agent.get_next_signal()
-            print("Got signal:", sig)
+            print("Input signal:", sig)
             self.run_rules(sig)
-            print("Password buffer is:", self.agent.password_buffer)
+            print("Password buffer1 is:", self.agent.password_buffer)
 
