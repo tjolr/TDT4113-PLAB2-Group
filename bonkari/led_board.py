@@ -2,7 +2,7 @@
 """
 Created on Mon Oct  7 10:56:59 2019
 
-@author: Joule
+@author:
 """
 from RPi import GPIO
 from time import sleep, time

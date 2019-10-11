@@ -2,7 +2,7 @@
 """
 Created on Mon Oct  7 10:56:45 2019
 
-@author: Andreas Gravrok, Andreas Berg
+@author:
 """
 
 

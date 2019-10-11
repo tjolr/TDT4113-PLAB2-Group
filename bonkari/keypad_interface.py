@@ -3,8 +3,9 @@
 Created on Mon Oct  7 11:05:24 2019
 @author:
 """
-from RPi import GPIO
 from time import sleep
+from RPi import GPIO
+
 
 
 class Keypad:
@@ -17,10 +18,10 @@ class Keypad:
         ['*', '0', '#'],
     ]
 
-    def __init__(self, rowPins, colPins, doSetup=False):
-        self.rowPins = rowPins
-        self.colPins = colPins
-        if doSetup:
+    def __init__(self, row_pins, col_pins, do_setup=False):
+        self.row_pins = row_pins
+        self.col_pins = col_pins
+        if do_setup:
             self.setup()
 
     def setup(self):
@@ -28,9 +29,9 @@ class Keypad:
          Also, use GPIO functions to set the row pins as
          outputs and the column pins as inputs.
         """
-        for pin in self.rowPins:
+        for pin in self.row_pins:
             GPIO.setup(pin, GPIO.OUT)
-        for pin in self.colPins:
+        for pin in self.col_pins:
             GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
     def do_polling(self):
@@ -38,22 +39,22 @@ class Keypad:
         Determine the key currently
         being pressed on the keypad.
         """
-        for r in self.rowPins:
-            GPIO.output(r, 1)
-            rowNum = self.rowPins.index(r)
-            for c in self.colPins:
-                colNum = self.colPins.index(c)
-                isOn = True
+        for row in self.row_pins:
+            GPIO.output(row, 1)
+            row_num = self.row_pins.index(row)
+            for col in self.col_pins:
+                col_num = self.col_pins.index(col)
+                is_on = True
                 i = 0
-                while isOn and i < 10:
-                    isOn = (GPIO.input(c) == GPIO.HIGH)
+                while is_on and i < 10:
+                    is_on = (GPIO.input(col) == GPIO.HIGH)
                     i += 1
-                    if not isOn:
+                    if not is_on:
                         break
                     sleep(0.01)
-                if isOn:
-                    return Keypad.keyLookup[rowNum][colNum]
-            GPIO.output(r, 0)
+                if is_on:
+                    return Keypad.keyLookup[row_num][col_num]
+            GPIO.output(row, 0)
             sleep(0.01)
         return None
 
@@ -64,7 +65,7 @@ class Keypad:
         until a key press is detected.
         """
         output = None
-        while output == None:
+        while output is None:
             output = self.do_polling()
             sleep(0.1)
         return output
@@ -72,13 +73,9 @@ class Keypad:
 
 if __name__ == "__main__":
     GPIO.setmode(GPIO.BCM)
-    '''
-    rowPins = [26, 19, 13, 6]
-    colPins = [21, 20, 16]
-    '''
-    rowPins = [18, 23, 24, 25]
-    colPins = [17, 27, 22]
-    k = Keypad(rowPins, colPins, doSetup=True)
+    ROW_PINS = [18, 23, 24, 25]
+    COL_PINS = [17, 27, 22]
+    k = Keypad(ROW_PINS, COL_PINS, do_setup=True)
     k.setup()
     try:
         while True:
