@@ -2,7 +2,7 @@
 """
 Created on Mon Oct  7 11:00:03 2019
 
-@author: Andreas Gravrok
+@author:
 """
 import os
 
@@ -53,7 +53,7 @@ class KPC:
         Return the override-signal, if it is non-blank; otherwise query the
         keypad for the next pressed key.
         """
-        if self.override_signal == None:
+        if self.override_signal is None:
             self.override_signal = self.keypad.get_next_signal()
         override_buffer = self.override_signal
         self.override_signal = None
@@ -67,9 +67,9 @@ class KPC:
         this should call the LED Board to initiate the appropriate lighting
         pattern for login success or failure.
         """
-        f = open(self.path_name, "r")
-        password = f.read()
-        f.close()
+        file = open(self.path_name, "r")
+        password = file.read()
+        file.close()
         print("The password is:", password)
         try:
             if int(self.password_buffer) == int(password):
@@ -101,10 +101,9 @@ class KPC:
 
             if len(self.password_buffer) >= 4 and self.password_buffer.isdigit():
                 self.led_board.confirm_valid()
-                f = open(self.path_name, "w")
-                f.write(self.password_buffer)
-                f.close()
-                print("SHALALALA")
+                file = open(self.path_name, "w")
+                file.write(self.password_buffer)
+                file.close()
             else:
                 self.led_board.deny()
 
@@ -112,6 +111,9 @@ class KPC:
         self.password_buffer2 = ""
 
     def reenter_password(self):
+        '''
+        Not needed
+        '''
         pass
 
 
