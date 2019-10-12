@@ -17,29 +17,6 @@ class KPC:
         self.override_signal = None
         self.led_id = ""
         self.led_dur = ""
-        #local testing
-        self.signals = [
-            "8",
-            "1",
-            "2",
-            "3",
-            "4",
-            "*",
-            "*",
-            "5",
-            "1",
-            "7",
-            "7",
-            "*",
-            "5",
-            "1",
-            "7",
-            "7",
-            "*",
-            "2",
-            "3",
-            "*"
-        ]
 
 
 
@@ -47,15 +24,13 @@ class KPC:
         '''clear passcode buffer and power-up'''
         self.password_buffer = ""
         self.led_board.power_up()
+        print("Power on!")
 
     def get_next_signal(self):
         '''returns override signal if non-blank,
         otherwise query the keypad for next pressed key'''
         if self.override_signal == None:
             self.override_signal = self.keypad.get_next_signal()
-
-            #Use this line when testing locally
-            #self.override_signal = self.get_next_signal2()
         override_buffer = self.override_signal
         self.override_signal = None
         time.sleep(0.25)
@@ -77,12 +52,13 @@ class KPC:
         Store result in override-signal
         call led board to light up succesful login'''
         try:
-            print(f'Password buffer {self.password_buffer}')
+            print('Password buffer:', self.password_buffer)
             if self.password_buffer == self.read_password():
-                print('Password verify login correct!!!')
+                print('Password verify login correct!')
                 self.override_signal = "Y"
                 self.led_board.login()
             else:
+                print('Im sorry, your password was incorrect.')
                 self.override_signal = "N"
                 self.led_board.deny()
         except ValueError:
@@ -93,15 +69,17 @@ class KPC:
 
     def validate_passcode_change(self, *sig):
         '''Check that the new password is legal.'''
-        print(f'Password buffer 1: {self.password_buffer}')
-        print(f'Password buffer 2: {self.password_buffer_2}')
+        print('Password buffer 1: ', self.password_buffer)
+        print('Password buffer 2: ',self.password_buffer_2)
 
         if self.password_buffer == self.password_buffer_2:
             if self.password_buffer.isdigit() and len(self.password_buffer) >= 4:
                 self.write_new_password(self.password_buffer)
                 self.led_board.login()
+                print("You have successfully changed your password!")
             else:
                 self.led_board.deny()
+                print("Sorry, your passwords did not match.")
 
         self.password_buffer, self.password_buffer_2 = "", ""
 
@@ -110,7 +88,6 @@ class KPC:
         with open(self.cp_pathname, 'r') as file:
             password = file.readline().strip()
 
-        print("Password",password)
         return password
 
     def write_new_password(self, password):
@@ -132,13 +109,14 @@ class KPC:
 
     def set_led_dur(self, signal):
         '''Set led lighting duration'''
-        self.led_dur= signal
+        self.led_dur = signal
 
     def light_leds(self, *sig):
         '''Will light up the set led id for led_dur seconds'''
         led_names = ["A", "B", "C", "D", "E", "F"]
 
         if self.led_dur != "" and self.led_id in "012345":
+            print("Lighting led", self.led_id,"for",self.led_dur,"seconds." )
             self.led_board.light_leds(list(led_names[int(self.led_id)]), int(self.led_dur))
         else:
             self.led_board.deny()

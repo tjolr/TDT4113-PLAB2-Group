@@ -7,11 +7,14 @@ from keypad import Keypad
 def main():
     '''Main'''
     keypad = Keypad()
+    keypad.setup()
+
     charlie = Charlie()
+    charlie.setup()
 
     kpc = KPC(keypad, charlie)
 
-    kpc.write_new_password("1234")
+    #kpc.write_new_password("1234")
     fsm = FSM(kpc)
 
     def signal_is_digit(signal):
@@ -40,12 +43,12 @@ def main():
         "s_read",
         signal_is_digit,
         kpc.password_buffer_add)
-    rule_13 = Rule("s_read", "s_init", signal_accept_all, kpc.exit_action)
+    rule_13 = Rule("s_read", "s_init", "#", kpc.exit_action)
 
     # From state s_verify
     # Not sure about agent action here
     rule_5 = Rule("s_verify", "s_active", "Y", kpc.pass_func)
-    rule_4 = Rule("s_verify", "s_init", "#", kpc.exit_action)
+    rule_4 = Rule("s_verify", "s_init", signal_accept_all, kpc.exit_action)
 
     # From state s_active
     rule_6 = Rule("s_active", "s_read_2", "*", kpc.init_passcode_entry)

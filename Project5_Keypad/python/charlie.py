@@ -37,6 +37,7 @@ class Charlie:
         while time.time() - start_t < duration:
             for led in led_ns:
                 self.light_led(led)
+        self.all_off()
 
     def all_off(self):
         '''Turns all the LEDs off, mainly for debugging maybe.'''

@@ -22,7 +22,7 @@ class FSM:
         self.symbol = self.agent.get_next_signal()
 
         if debug:
-            print(f'Next signal: {self.symbol}')
+            print('Next signal:',self.symbol)
 
     def run_rules(self):
         '''Go through the rule list, applying each rule until one is fired'''
@@ -51,12 +51,15 @@ class FSM:
 
         # Query for next signal and run rules until the FSM enters its default
         # final state
-        i = 0
-        while i < 25:
-            self.get_next_signal()
 
+        print("\n======================"
+              "\nWELCOME TO THE KEYPAD!"
+              "\n======================")
+
+        while True:
+            self.get_next_signal()
             self.run_rules()
-            i += 1
+
 
 
 class Rule:
